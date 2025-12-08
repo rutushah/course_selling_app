@@ -10,7 +10,7 @@ courseRouter.get('/viewAllCourses', function(req, res){
 })
 
 // when user wants to purchase any course following is the endpoint
-courseRouter.post('/course/purchaseCourse', function(req, res){
+courseRouter.post('/purchaseCourse', function(req, res){
     res.json({
         message: "Purchase course endpoint"
     })
