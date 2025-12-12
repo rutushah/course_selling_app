@@ -4,12 +4,45 @@
  const { Router } = require("express");
  const userRouter = Router();
 
+ //calling userdb
+ const { userModel } = require("../db")
+
+ //jsonwebtokens for calling admin middle ware
+const jwt = require('jsonwebtoken');
+const { JWT_USER_PASSWORD } = require("../config");
+const {userMiddleWare} = require("../middleware/user");
+
+
 //user signUp route
-userRouter.post('/signUp', function(req, res){
-    res.json({
-        message: "User Sign up endpoint"
-    })
-})
+userRouter.post('/signUp',   async function(req, res){
+    try{
+        const email = req.body.email;
+        const password = req.body.password;
+        const firstName = req.body.firstName;
+        const lastName = req.body.lastName;
+
+        await userModel.create({
+            email:email, 
+            password: password,
+            firstName : firstName,
+            lastName: lastName
+        });
+
+        res.json({
+            message: "Congratulations!!, Your user is successfully signup!!!"
+        });
+    } catch(err){
+        if(err.code === 11000){
+            res.status(400).json({
+                message: "Username already exists!"
+            });
+        }else{
+            res.status(500).json({
+                message: "Internal Server Error"
+            });
+        }
+    }
+});
 
 
 userRouter.post('/login', function(req, res){
@@ -19,7 +52,7 @@ userRouter.post('/login', function(req, res){
 })
 
 // get all the courses that user has purchased
-userRouter.get('/purchases', function(req, res){
+userRouter.get('/purchases', userMiddleWare, async function(req, res){
     res.json({
         message: "View all courses purchased by the user"
     })

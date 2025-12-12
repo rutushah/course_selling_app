@@ -1,6 +1,14 @@
 const { Router } = require("express");
 const courseRouter = Router();
 
+//calling coursemodel and purchasemodel
+const { courseModel } = require("../db")
+const { purchaseModel } = require("../db")
+
+//middleware user 
+const {userMiddleWare} = require("../middleware/user");
+
+
 
     //get all courses route
 courseRouter.get('/viewAllCourses', function(req, res){

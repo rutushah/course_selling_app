@@ -1,4 +1,10 @@
+//mongodb password
+// E220NjXXzwl5oQL2 
+
+
 const mongoose = require('mongoose');
+
+mongoose.connect("mongodb+srv://rutushah105_db_user:E220NjXXzwl5oQL2@cluster0.wbac56t.mongodb.net/cousera-app")
 
 const Schema = mongoose.Schema;
 const ObjectId = Schema.ObjectId;
