@@ -45,10 +45,33 @@ userRouter.post('/signUp',   async function(req, res){
 });
 
 
-userRouter.post('/login', function(req, res){
-    res.json({
-        message: "User login Endpoint"
-    })
+userRouter.post('/login', async function(req, res){
+       const email = req.body.email;
+        const password = req.body.password;
+
+        const user = await userModel.findOne({
+            email:email,
+            password:password
+        })
+
+        console.log(user);
+        if(user){
+            const token = jwt.sign({
+                id: user._id.toString
+            },
+            JWT_USER_PASSWORD
+        );
+
+        console.log(user._id.toString);
+        res.json({
+            token,
+            message:"User is logged in Successfully!!!"
+        })
+        }else{
+            res.status(403).json({
+                message:"Incorrect username or password!!"
+            })
+        }
 })
 
 // get all the courses that user has purchased

@@ -2,12 +2,13 @@
 require('dotenv').config()
 console.log(process.env.DB_URL)
 
-
 const express = require('express');
+const mongoose = require('mongoose');
+
 const { userRouter } = require('./routes/user');
 const { courseRouter } = require('./routes/course');
 const { adminRouter } = require('./routes/admin');
-const mongoose = require('mongoose');
+
 //using middlewares
 
 
