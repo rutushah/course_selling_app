@@ -1,11 +1,12 @@
 const { Router } = require("express")
 const adminRouter = Router();
-const { adminModel, userModel } = require("../db")
+const { adminModel, userModel, courseModel } = require("../db")
 
 //jsonwebtokens for calling admin middle ware
 const jwt = require('jsonwebtoken');
 const { JWT_ADMIN_PASSWORD } = require("../config");
 const {adminMiddleWare} = require("../middleware/admin");
+const admin = require("../middleware/admin");
 
 
 //admin signUp route
@@ -71,22 +72,71 @@ adminRouter.post('/login', async function(req, res){
 
 // course creation route
 adminRouter.post("/createCourse", adminMiddleWare, async function(req, res){
+
+    const adminId = req.userId;
+
+    const {courseTitle, courseDescription, price, imageURL} = req.body;
+
+    const course = await courseModel.create(
+        {   
+            courseTitle:courseTitle,
+            courseDescription:courseDescription,
+            price:price,
+            imageURL:imageURL,
+            creatorId:adminId
+        })
+
     res.json({
-        message: "New course created Successfully!!"
+        message: "New course created Successfully!!",
+        courseId: course._id
     })
 })
 
 // change the course creation name route
-adminRouter.put("/createCourse", adminMiddleWare, function(req, res){
-    res.json({
-        message: "Course Name changed Successfully!!"
-    })
+adminRouter.put("/createCourse", adminMiddleWare, async function(req, res){
+
+    const adminId = req.userId;
+
+    const {courseTitle, courseDescription, price, imageURL, courseId} = req.body;
+
+    // to update the course we use updateOne, where course id is this update the following information like title, description, price, image etc
+    const course = await courseModel.updateOne({
+            _id:courseId,
+            creatorId:adminId
+        },
+        {   
+            courseTitle:courseTitle,
+            courseDescription:courseDescription,
+            price:price,
+            imageURL:imageURL
+        })
+
+        if(course){
+                res.json({
+                    message: "Course updated Successfully!!",
+                    courseId: course._id
+                })
+        }else{
+            res.status(403).json({
+                message:"Unable to update the course!!",
+                courseId: course._id
+            })
+        }
+
 })
 
 // course creation route
-adminRouter.get("/createCourse/bulk", adminMiddleWare, function(req, res){
+adminRouter.get("/createCourse/bulk", adminMiddleWare, async function(req, res){
+   
+    const adminId = req.userId;
+
+    const courses = await courseModel.find({
+            creatorId:adminId
+    })
+   
     res.json({
-        message: "View all created courses!!"
+        message: "View all created courses!!",
+        courses
     })
 })
 

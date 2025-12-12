@@ -5,7 +5,7 @@
  const userRouter = Router();
 
  //calling userdb
- const { userModel } = require("../db")
+ const { userModel, purchaseModel, courseModel} = require("../db")
 
  //jsonwebtokens for calling admin middle ware
 const jwt = require('jsonwebtoken');
@@ -76,8 +76,20 @@ userRouter.post('/login', async function(req, res){
 
 // get all the courses that user has purchased
 userRouter.get('/purchases', userMiddleWare, async function(req, res){
+    
+    const userId = req.userId;
+
+    const purchases = await purchaseModel.find({
+        userId
+    })
+    
+    const coursesData = await courseModel.find({
+        _id: {$in: purchases.map(x=> x.courseId)}
+    })
+    
     res.json({
-        message: "View all courses purchased by the user"
+       purchases,
+       coursesData
     })
 })   
 
